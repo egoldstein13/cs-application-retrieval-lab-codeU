@@ -60,8 +60,19 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch or(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        // filled in
+		Map<String, Integer> orMap = new HashMap<String, Integer>();
+                for (String key : map.keySet())
+                    	orMap.put(key, this.getRelevance(key));
+                for (String key : that.map.keySet()){
+			if(orMap.containsKey(key))
+                		orMap.put(key, this.getRelevance(key) + that.getRelevance(key));
+			else
+				orMap.put(key, that.getRelevance(key));
+		}
+                WikiSearch orSearch= new WikiSearch(orMap);
+                return orSearch;
+		
 	}
 	
 	/**
@@ -71,19 +82,31 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch and(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        //filled in
+		Map<String, Integer> andMap = new HashMap<String, Integer>();
+		for (String key : map.keySet()){
+   			if(that.map.containsKey(key))
+				andMap.put(key, this.getRelevance(key)+that.getRelevance(key));
+		}
+		WikiSearch andSearch= new WikiSearch(andMap);
+		return andSearch;
 	}
 	
 	/**
-	 * Computes the intersection of two search results.
-	 * 
+	 * Computes the difference of two search results.
+	 * 		
 	 * @param that
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch minus(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        // filled in
+		 Map<String, Integer> minusMap = new HashMap<String, Integer>();
+                for (String key : map.keySet()){
+                        if(map.containsKey(key) && !that.map.containsKey(key))
+                                minusMap.put(key, this.getRelevance(key));
+                }
+                WikiSearch minusSearch= new WikiSearch(minusMap);
+                return minusSearch;
 	}
 	
 	/**
@@ -104,10 +127,22 @@ public class WikiSearch {
 	 * @return List of entries with URL and relevance.
 	 */
 	public List<Entry<String, Integer>> sort() {
-        // FILL THIS IN!
-		return null;
+        // filled in
+		List<Entry<String,Integer>> sortList=new LinkedList<Entry<String,Integer>>();
+		for (Map.Entry<String, Integer> entry : map.entrySet())
+			sortList.add(entry);
+		Comparator<Entry<String, Integer>> comparator = new Comparator<Entry<String, Integer>>(){		
+			@Override
+			public int compare(Entry<String, Integer> w1, Entry<String, Integer> w2) {
+				return (w1.getValue().compareTo(w2.getValue()));
+			}
+		};
+		
+		Collections.sort(sortList, comparator);
+	
+		return sortList;
 	}
-
+  
 	/**
 	 * Performs a search and makes a WikiSearch object.
 	 * 
